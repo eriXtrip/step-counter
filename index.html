@@ -1,48 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Step Counter and Fare Generator</title>
 </head>
+
 <body>
     <h1>Step Counter and Fare Generator</h1>
     <p>Steps: <span id="stepCount">0</span></p>
+    <p id="kilometerCount" style="display:none;">Kilometers: <span id="kilometers">0</span></p>
 
     <label for="regularFare">Enter Regular Fare:</label>
     <input type="number" id="regularFare" value="">
 
-    <p id="fareResult">Estimated Fare: <span id="fareAmount">0</span></p>
+    <p id="fareResult" style="display:none;">Estimated Fare: <span id="fareAmount">0</span></p>
 
     <button id="stopButton">Stop</button>
+    <button id="discountButton">Apply Discount</button>
 
     <script>
         let stepCount = 0;
         let regularFare = 0;
         let isCounting = true;
+        let isDiscountApplied = false;
 
         // Function to calculate fare based on step count
         function calculateFare(stepCount) {
-            const stepsPerKilometer = 1200; // Average steps to walk one kilometer
+            const stepsPerKilometer = 1500; // Average steps to walk one kilometer
             const farePerKilometer = 1.40; // Additional fare per kilometer
-            
-            // Calculate distance in kilometers
-            const distanceInKilometers = stepCount / stepsPerKilometer;
+            let distanceInKilometers = 0;
+
+            if (stepCount > 5000) {
+                // Calculate distance in kilometers
+                distanceInKilometers = stepCount - 5000;
+                distanceInKilometers = distanceInKilometers / 1500;
+                distanceInKilometers = (farePerKilometer * Math.floor(distanceInKilometers))
+            }
 
             // Calculate fare
-            const fare = regularFare + (distanceInKilometers - 1) * farePerKilometer;
+            let fare = regularFare + distanceInKilometers;
+
+            // Apply discount if applicable
+            if (isDiscountApplied) {
+                fare -= (0.2 * fare);
+            }
+
             return fare.toFixed(2);
         }
 
         // Event listener for the stop button
-        document.getElementById('stopButton').addEventListener('click', function() {
+        document.getElementById('stopButton').addEventListener('click', function () {
             isCounting = false;
+
+            // Calculate fare when stop button is clicked
+            const fareAmount = calculateFare(stepCount);
+            document.getElementById('fareAmount').innerText = fareAmount;
+
+            // Show elements
+            document.getElementById('kilometerCount').style.display = 'block';
+            document.getElementById('fareResult').style.display = 'block';
+        });
+
+        // Event listener for the discount button
+        document.getElementById('discountButton').addEventListener('click', function () {
+            // Toggle discount flag
+            isDiscountApplied = !isDiscountApplied;
+
+            // Calculate fare with or without discount
+            const fareAmount = calculateFare(stepCount);
+            document.getElementById('fareAmount').innerText = fareAmount;
+
+            // Change button text based on discount application
+            if (isDiscountApplied) {
+                this.innerText = "Remove Discount";
+            } else {
+                this.innerText = "Apply Discount";
+            }
         });
 
         // Check if DeviceMotion API is supported
         if (window.DeviceMotionEvent) {
             // Initialize motion event listener
-            window.addEventListener('devicemotion', function(event) {
+            window.addEventListener('devicemotion', function (event) {
                 if (!isCounting) return; // Stop counting if stop button is clicked
 
                 // Calculate magnitude of acceleration
@@ -60,9 +101,9 @@
                     stepCount++;
                     document.getElementById('stepCount').innerText = stepCount;
 
-                    // Update fare amount
-                    const fareAmount = calculateFare(stepCount);
-                    document.getElementById('fareAmount').innerText = fareAmount;
+                    // Update kilometer count
+                    const kilometerCount = Math.floor(stepCount / 1500);
+                    document.getElementById('kilometers').innerText = kilometerCount;
                 }
             });
         } else {
@@ -74,11 +115,10 @@
         regularFare = parseFloat(document.getElementById('regularFare').value);
 
         // Update fare amount when regular fare changes
-        document.getElementById('regularFare').addEventListener('input', function() {
+        document.getElementById('regularFare').addEventListener('input', function () {
             regularFare = parseFloat(this.value);
-            const fareAmount = calculateFare(stepCount);
-            document.getElementById('fareAmount').innerText = fareAmount;
         });
     </script>
 </body>
+
 </html>
