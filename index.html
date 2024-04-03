@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step Counter</title>
+</head>
+<body>
+    <h1>Step Counter</h1>
+    <p>Steps: <span id="stepCount">0</span></p>
+
+    <script>
+        let stepCount = 0;
+
+        // Check if DeviceMotion API is supported
+        if (window.DeviceMotionEvent) {
+            // Initialize motion event listener
+            window.addEventListener('devicemotion', function(event) {
+                // Calculate magnitude of acceleration
+                const acceleration = Math.sqrt(
+                    event.accelerationIncludingGravity.x ** 2 +
+                    event.accelerationIncludingGravity.y ** 2 +
+                    event.accelerationIncludingGravity.z ** 2
+                );
+
+                // Arbitrary threshold for detecting steps
+                const stepThreshold = 15;
+
+                // If acceleration exceeds threshold, increment step count
+                if (acceleration > stepThreshold) {
+                    stepCount++;
+                    document.getElementById('stepCount').innerText = stepCount;
+                }
+            });
+        } else {
+            // DeviceMotion API not supported
+            alert("DeviceMotion API not supported in this browser.");
+        }
+    </script>
+</body>
+</html>
+    
