@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step Counter and Fare Generator</title>
+    <title>Fare Generator using Step Counter</title>
 </head>
 
 <body>
-    <h1>Step Counter and Fare Generator</h1>
+    <h1>Fare Generator using using Step Counter</h1>
+    <h5>Experimental</h5>
     <p>Steps: <span id="stepCount">0</span></p>
     
 
@@ -128,7 +129,7 @@
                     document.getElementById('stepCount').innerText = stepCount;
 
                     // Update kilometer count
-                    const kilometerCount = Math.floor(stepCount / 1500);
+                    const kilometerCount = (stepCount / 1500).toFixed(1);
                     document.getElementById('kilometers').innerText = kilometerCount;
                 }
             });
