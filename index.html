@@ -10,15 +10,17 @@
 <body>
     <h1>Step Counter and Fare Generator</h1>
     <p>Steps: <span id="stepCount">0</span></p>
-    <p id="kilometerCount" style="display:none;">Kilometers: <span id="kilometers">0</span></p>
+    
 
     <label for="regularFare">Enter Regular Fare:</label>
     <input type="number" id="regularFare" value="">
-
+    
+    <p id="kilometerCount" style="display:none;">Estimated Kilometers: <span id="kilometers">0</span></p>
     <p id="fareResult" style="display:none;">Estimated Fare: <span id="fareAmount">0</span></p>
 
-    <button id="stopButton">Stop</button>
-    <button id="discountButton">Apply Discount</button>
+    <button id="calculateButton">Calculate Fare</button>
+    <button id="discountButton"  style="display:none;">Apply Discount</button>
+    <button id="stopButton" style="display:none;">Stop</button>
 
     <script>
         let stepCount = 0;
@@ -50,17 +52,41 @@
             return fare.toFixed(2);
         }
 
-        // Event listener for the stop button
-        document.getElementById('stopButton').addEventListener('click', function () {
+        // Event listener for the calculate fare button
+        document.getElementById('calculateButton').addEventListener('click', function () {
             isCounting = false;
 
-            // Calculate fare when stop button is clicked
+            // Calculate fare when calculate button is clicked
             const fareAmount = calculateFare(stepCount);
             document.getElementById('fareAmount').innerText = fareAmount;
 
             // Show elements
             document.getElementById('kilometerCount').style.display = 'block';
             document.getElementById('fareResult').style.display = 'block';
+            document.getElementById('stopButton').style.display = 'block';
+            document.getElementById('discountButton').style.display = 'block';
+            document.getElementById('calculateButton').style.display = 'none';
+        });
+
+        // Event listener for the stop button
+        document.getElementById('stopButton').addEventListener('click', function () {
+            // Reset step count
+            stepCount = 0;
+            document.getElementById('stepCount').innerText = stepCount;
+
+            // Reset regular fare
+            document.getElementById('regularFare').value = "";
+            regularFare = 0;
+
+            // Hide elements
+            document.getElementById('kilometerCount').style.display = 'none';
+            document.getElementById('fareResult').style.display = 'none';
+            document.getElementById('discountButton').style.display = 'none';
+            document.getElementById('stopButton').style.display = 'none';
+            document.getElementById('calculateButton').style.display = 'block';
+
+            // Reset isCounting to true
+            isCounting = true;
         });
 
         // Event listener for the discount button
@@ -111,10 +137,7 @@
             alert("DeviceMotion API not supported in this browser.");
         }
 
-        // Get regular fare from input field
-        regularFare = parseFloat(document.getElementById('regularFare').value);
-
-        // Update fare amount when regular fare changes
+        // Update regular fare when input field changes
         document.getElementById('regularFare').addEventListener('input', function () {
             regularFare = parseFloat(this.value);
         });
